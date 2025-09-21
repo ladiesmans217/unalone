@@ -139,3 +139,6 @@ storage_export/
 !unalone-app/assets/**
 !**/README.md
 !**/*.md
+
+# Prevent committing converted submodule metadata backups
+unalone-app/.git_backup_submodule/
