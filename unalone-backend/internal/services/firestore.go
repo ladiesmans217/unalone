@@ -4,6 +4,8 @@ package services
 import (
 	"context"
 	"log"
+	"os"
+	"strings"
 
 	"cloud.google.com/go/firestore"
 	firebase "firebase.google.com/go/v4"
@@ -31,12 +33,15 @@ func NewFirestoreService(ctx context.Context) (*FirestoreService, error) {
 	var app *firebase.App
 	var err error
 
-	// Try to use service account key file if available
-	if credentialsFile := getServiceAccountPath(); credentialsFile != "" {
+	// Prefer explicit credentials via env
+	if jsonCreds := os.Getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON"); strings.TrimSpace(jsonCreds) != "" {
+		opt := option.WithCredentialsJSON([]byte(jsonCreds))
+		app, err = firebase.NewApp(ctx, nil, opt)
+	} else if credentialsFile := getServiceAccountPath(); credentialsFile != "" {
 		opt := option.WithCredentialsFile(credentialsFile)
 		app, err = firebase.NewApp(ctx, nil, opt)
 	} else {
-		// Use default credentials (for local development with gcloud auth)
+		// Default credentials (useful for local dev with gcloud auth)
 		app, err = firebase.NewApp(ctx, nil)
 	}
 
@@ -60,26 +65,36 @@ func NewFirestoreService(ctx context.Context) (*FirestoreService, error) {
 
 // isTestMode checks if we're running without Google Cloud credentials
 func isTestMode() bool {
-	// Check for service account credentials or gcloud auth
+	// Explicit override
+	if mode := os.Getenv("APP_MODE"); strings.ToLower(mode) == "test" || strings.ToLower(mode) == "mock" {
+		return true
+	}
+	// If credentials are provided, not test mode
+	if strings.TrimSpace(os.Getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON")) != "" {
+		return false
+	}
 	if getServiceAccountPath() != "" {
 		return false
 	}
-	
-	// For now, assume test mode if no credentials are found
-	// In production, this should be an environment variable
+	// Otherwise, default to test mode
 	return true
 }
 
 // getServiceAccountPath returns the path to service account key file
 func getServiceAccountPath() string {
-	// Check for service account key file in common locations
-	// This will be set up when we configure Google Cloud
-	// For now, return empty string to use default credentials
+	// Allow overriding via env var
+	if p := strings.TrimSpace(os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")); p != "" {
+		return p
+	}
 	return ""
 }
 
 // Close closes the Firestore client
 func (fs *FirestoreService) Close() error {
+	// In test mode, client may be nil; safely no-op
+	if fs.client == nil {
+		return nil
+	}
 	return fs.client.Close()
 }
 
@@ -100,8 +115,8 @@ func (fs *FirestoreService) Collection(name string) *firestore.CollectionRef {
 
 // Collections used in the app
 const (
-	UsersCollection = "users"
+	UsersCollection    = "users"
 	HotspotsCollection = "hotspots"
-	ChatsCollection = "chats"
+	ChatsCollection    = "chats"
 	MessagesCollection = "messages"
 )

@@ -3,6 +3,7 @@ package services
 
 import (
 	"errors"
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -24,12 +25,14 @@ type Claims struct {
 
 // NewAuthService creates a new authentication service
 func NewAuthService(fs *FirestoreService) *AuthService {
-	// In production, this should be loaded from environment variables
-	jwtSecret := []byte("unalone-secret-key-change-in-production")
-	
+	// Load JWT secret from environment, fall back to a default for dev
+	secret := os.Getenv("JWT_SECRET")
+	if secret == "" {
+		secret = "unalone-secret-key-change-in-production"
+	}
 	return &AuthService{
 		firestoreService: fs,
-		jwtSecret:        jwtSecret,
+		jwtSecret:        []byte(secret),
 	}
 }
 

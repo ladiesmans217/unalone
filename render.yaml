@@ -1,0 +1,34 @@
+services:
+  - type: web
+    name: unalone-backend
+    env: go
+    rootDir: unalone-backend
+    plan: free
+    buildCommand: go build -o server ./cmd/server
+    startCommand: ./server
+    autoDeploy: true
+    envVars:
+      - key: APP_MODE
+        value: production
+      # Set one of the following for Firestore:
+      # 1) Inline JSON credentials (use the literal JSON string in the Render dashboard)
+      # - key: GOOGLE_APPLICATION_CREDENTIALS_JSON
+      #   value: "{\"type\":\"service_account\",...}"
+      # 2) Path-based credentials (if you mount a disk or bundle the key)
+      # - key: GOOGLE_APPLICATION_CREDENTIALS
+      #   value: /etc/secrets/service-account.json
+      # Security: Configure these in Render's dashboard as "Use existing" not committed here
+      - key: JWT_SECRET
+        generateValue: true
+      # Optional: Gemini API
+      # - key: GEMINI_API_KEY
+      #   sync: false
+      # Optional: Redis cache (provision a Managed Redis and set these)
+      # - key: REDIS_HOST
+      #   value: your-redis-host
+      # - key: REDIS_PORT
+      #   value: "6379"
+      # - key: REDIS_PASSWORD
+      #   value: your-redis-password
+      # - key: REDIS_DB
+      #   value: "0"

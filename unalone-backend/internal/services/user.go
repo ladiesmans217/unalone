@@ -199,7 +199,7 @@ const mockDataFile = "mock_users.json"
 // loadMockUsers loads users from JSON file
 func (us *UserService) loadMockUsers() (map[string]*models.User, error) {
 	users := make(map[string]*models.User)
-	
+
 	// Check if file exists
 	if _, err := os.Stat(mockDataFile); os.IsNotExist(err) {
 		return users, nil // Return empty map if file doesn't exist
@@ -211,12 +211,33 @@ func (us *UserService) loadMockUsers() (map[string]*models.User, error) {
 		return users, err
 	}
 
-	// Parse JSON
-	if len(data) > 0 {
-		err = json.Unmarshal(data, &users)
-		if err != nil {
-			return users, err
+	if len(data) == 0 {
+		return users, nil
+	}
+
+	// Read into generic map to capture password_hash too
+	var raw map[string]map[string]interface{}
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return users, err
+	}
+
+	for id, m := range raw {
+		// Extract password hash if present
+		pw := ""
+		if v, ok := m["password_hash"].(string); ok {
+			pw = v
 		}
+		// Marshal back to JSON and unmarshal into models.User
+		b, err := json.Marshal(m)
+		if err != nil {
+			continue
+		}
+		var u models.User
+		if err := json.Unmarshal(b, &u); err != nil {
+			continue
+		}
+		u.PasswordHash = pw
+		users[id] = &u
 	}
 
 	return users, nil
@@ -230,12 +251,27 @@ func (us *UserService) saveMockUsers(users map[string]*models.User) error {
 		os.MkdirAll(dir, 0755)
 	}
 
-	// Marshal to JSON
-	data, err := json.MarshalIndent(users, "", "  ")
+	// Build output map with password_hash included
+	out := make(map[string]map[string]interface{})
+	for id, u := range users {
+		// Marshal user (without password due to json:"-")
+		b, err := json.Marshal(u)
+		if err != nil {
+			continue
+		}
+		var m map[string]interface{}
+		if err := json.Unmarshal(b, &m); err != nil {
+			continue
+		}
+		// Add password hash explicitly for persistence in test mode
+		m["password_hash"] = u.PasswordHash
+		out[id] = m
+	}
+
+	data, err := json.MarshalIndent(out, "", "  ")
 	if err != nil {
 		return err
 	}
 
-	// Write to file
 	return ioutil.WriteFile(mockDataFile, data, 0644)
 }
