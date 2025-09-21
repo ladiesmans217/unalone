@@ -1,0 +1,141 @@
+# === Global OS junk ===
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# === Editor/IDE ===
+.idea/
+.history/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.swp
+*.swo
+*~
+*.orig
+
+# === Environment & secrets ===
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.crt
+*service-account*.json
+firebase-*.json
+gcloud-*.json
+*.secret.json
+credentials.json
+
+# === Logs & temp ===
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+tmp/
+temp/
+*.tmp
+
+# === Coverage ===
+coverage/
+coverage-*.json
+*.lcov
+*.coverprofile
+cover.out
+
+# === Node/Expo (unalone-app) ===
+unalone-app/node_modules/
+unalone-app/.expo/
+unalone-app/.expo-shared/
+unalone-app/dist/
+unalone-app/web-build/
+unalone-app/.cache/
+unalone-app/*.tsbuildinfo
+
+# React Native Android
+unalone-app/android/.gradle/
+unalone-app/android/.idea/
+unalone-app/android/local.properties
+unalone-app/android/app/build/
+unalone-app/android/.cxx/
+unalone-app/android/**/build/
+unalone-app/android/**/captures/
+unalone-app/android/**/intermediates/
+unalone-app/android/**/generated/
+unalone-app/android/**/release/
+unalone-app/android/**/debug/
+unalone-app/android/**/outputs/
+unalone-app/android/**/.DS_Store
+unalone-app/android/*.iml
+unalone-app/android/*.keystore
+unalone-app/android/*.keystore.*
+
+# React Native iOS
+unalone-app/ios/Pods/
+unalone-app/ios/build/
+unalone-app/ios/DerivedData/
+unalone-app/ios/*.xcworkspace/xcuserdata/
+unalone-app/ios/**/*.xcuserstate
+unalone-app/ios/**/*.xcscmblueprint
+unalone-app/ios/**/*.xccheckout
+unalone-app/ios/**/Pods/*
+unalone-app/ios/*.pbxuser
+unalone-app/ios/*.mode1v3
+unalone-app/ios/*.mode2v3
+unalone-app/ios/*.perspectivev3
+unalone-app/ios/xcuserdata/
+
+# Expo/EAS build artifacts (optional)
+unalone-app/*.tar.gz
+unalone-app/*.ipa
+unalone-app/*.apk
+unalone-app/*.aab
+
+# === Go backend (unalone-backend) ===
+unalone-backend/**/.env
+unalone-backend/**/*.log
+unalone-backend/**/*.out
+unalone-backend/**/*.test
+unalone-backend/**/coverage/
+
+# Go build artifacts/binaries within backend
+unalone-backend/**/server
+unalone-backend/**/server.exe
+unalone-backend/**/main
+unalone-backend/**/main.exe
+unalone-backend/**/.cache/
+
+# Go tools & caches
+**/*.exe~
+**/*.dll
+**/*.so
+**/*.dylib
+**/*.a
+
+# === Firebase emulators (if used locally) ===
+firebase-debug.log
+.firebase/
+.firebaserc.local
+.runtimeconfig.json
+.firestore/
+storage_export/
+
+# === Misc ===
+*.map~
+.eslintcache
+.prettier-cache
+*.pid
+
+# === Keep assets & examples tracked ===
+!unalone-app/assets/**
+!**/README.md
+!**/*.md
