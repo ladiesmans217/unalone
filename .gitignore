@@ -142,3 +142,4 @@ storage_export/
 
 # Prevent committing converted submodule metadata backups
 unalone-app/.git_backup_submodule/
+env.*.*
